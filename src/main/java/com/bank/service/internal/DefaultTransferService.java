@@ -16,7 +16,9 @@ public class DefaultTransferService implements TransferService {
     private final AccountRepository accountRepository;
     private final FeePolicy feePolicy;
     private double minimumTransferAmount = 1.00;
-
+    private Date starttime = null;
+    private Date endtime = null;
+    
     public DefaultTransferService(AccountRepository accountRepository, FeePolicy feePolicy) {
         this.accountRepository = accountRepository;
         this.feePolicy = feePolicy;
@@ -26,6 +28,12 @@ public class DefaultTransferService implements TransferService {
     public void setMinimumTransferAmount(double minimumTransferAmount) {
         this.minimumTransferAmount = minimumTransferAmount;
     }
+    
+    @Override
+    public void setTransferPeriod(Date starttime,Date endtime) {
+        this.starttime = starttime;
+        this.endtime = endtime;
+    }
 
     @Override
     @Transactional
@@ -33,7 +41,12 @@ public class DefaultTransferService implements TransferService {
         if (amount < minimumTransferAmount) {
             throw new IllegalArgumentException(format("transfer amount must be at least $%.2f", minimumTransferAmount));
         }
-
+        
+        Date currentDate = new Date();
+        if (!(this.starttime < currentDate and currentDate < endtime)) {
+            throw new IllegalArgumentException("Not allow to transfer money between "+this.starttime+" and "+this.endtime));
+        }
+        
         TransferReceipt receipt = new TransferReceipt();
 
         Account srcAcct = accountRepository.findById(srcAcctId);

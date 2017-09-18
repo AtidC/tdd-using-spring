@@ -22,6 +22,8 @@ public interface TransferService {
 
     TransferReceipt transfer(double amount, String srcAcctId, String destAcctId)
             throws InsufficientFundsException;
-
+    
     void setMinimumTransferAmount(double minimumTransferAmount);
+
+    void setTransferPeriod(Date starttime,Date endtime);
 }
